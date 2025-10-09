@@ -8,6 +8,7 @@
     $key = $getKey();
     $mergeTags = $getMergeTags();
     $statePath = $getStatePath();
+    $mentions = $field->getMentionsForJs();
     $tools = $getTools();
     $toolbarButtons = $getToolbarButtons();
     $floatingToolbars = $getFloatingToolbars();
@@ -43,6 +44,22 @@
                         maxFileSize: @js($fileAttachmentsMaxSize),
                         maxFileSizeValidationMessage: @js($fileAttachmentsMaxSize ? trans_choice('filament-forms::components.rich_editor.file_attachments_max_size_message', $fileAttachmentsMaxSize, ['max' => $fileAttachmentsMaxSize]) : null),
                         mergeTags: @js($mergeTags),
+                        mentions: @js($mentions),
+                        getMentionSearchResultsUsing: async (query, char) => {
+                            return await $wire.callSchemaComponentMethod(
+                                @js($key),
+                                'getMentionSearchResultsForJs',
+                                { search: query, char },
+                            )
+                        },
+                        getMentionLabelUsing: async (id, char) => {
+                            const result = await $wire.callSchemaComponentMethod(
+                                @js($key),
+                                'getMentionLabelForJs',
+                                { id, char },
+                            )
+                            return result?.label ?? null
+                        },
                         noMergeTagSearchResultsMessage: @js($getNoMergeTagSearchResultsMessage()),
                         placeholder: @js($getPlaceholder()),
                         state: $wire.{{ $applyStateBindingModifiers("\$entangle('{$statePath}')", isOptimisticallyLive: false) }},

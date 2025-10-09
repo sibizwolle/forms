@@ -36,6 +36,8 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 
 import getMergeTagSuggestion from './merge-tag-suggestion.js'
+import Mention from './extension-mention.js'
+import getMentionSuggestion from './mention-suggestion.js'
 
 export default async ({
     acceptedFileTypes,
@@ -49,6 +51,9 @@ export default async ({
     maxFileSize,
     maxFileSizeValidationMessage,
     mergeTags,
+    mentions,
+    getMentionSearchResultsUsing,
+    getMentionLabelUsing,
     noMergeTagSearchResultsMessage,
     placeholder,
     statePath,
@@ -110,12 +115,30 @@ export default async ({
                       }),
                       mergeTags,
                   }),
-              ]
+            ]
+            : []),
+        ...((mentions.length || typeof getMentionSearchResultsUsing === 'function')
+            ? [
+                Mention.configure({
+                    HTMLAttributes: { class: 'fi-fo-rich-editor-mention' },
+                    suggestions: mentions,
+                    getMentionSearchResultsUsing,
+                    getMentionLabelUsing
+                })
+            ]
             : []),
         OrderedList,
         Paragraph,
         Placeholder.configure({
-            placeholder,
+            emptyNodeClass: 'tiptap-multiple-placeholders',
+            showOnlyCurrent: false,
+            placeholder: ({ node }) => {
+                if (node?.type?.name === 'title') {
+                    return 'Vul een titel in';
+                }
+
+                return 'Begin met schrijven...';
+            },
         }),
         TextColor.configure({
             textColors,
