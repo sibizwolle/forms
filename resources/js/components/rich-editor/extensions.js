@@ -130,15 +130,7 @@ export default async ({
         OrderedList,
         Paragraph,
         Placeholder.configure({
-            emptyNodeClass: 'tiptap-multiple-placeholders',
-            showOnlyCurrent: false,
-            placeholder: ({ node }) => {
-                if (node?.type?.name === 'title') {
-                    return 'Vul een titel in';
-                }
-
-                return 'Begin met schrijven...';
-            },
+            placeholder
         }),
         TextColor.configure({
             textColors,
@@ -187,7 +179,7 @@ export default async ({
         }),
     )
 
-    for (const customExtension of loadedCustomExtensions) {
+    for (let customExtension of loadedCustomExtensions) {
         if (!customExtension || !customExtension.name) {
             continue
         }
@@ -195,6 +187,10 @@ export default async ({
         const existingIndex = extensions.findIndex(
             (extension) => extension.name === customExtension.name,
         )
+
+        if(customExtension.name === 'placeholder') {
+            customExtension = Placeholder.configure(customExtension.config);
+        }
 
         if (existingIndex !== -1) {
             extensions[existingIndex] = customExtension
