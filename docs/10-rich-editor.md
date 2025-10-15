@@ -617,6 +617,68 @@ RichEditor::make('content')
     ->activePanel('mergeTags')
 ```
 
+## Using mentions
+
+Mentions let users type a trigger character (like `@`) to search and insert inline references (e.g., users, tasks). Mentions are rendered inline as non-editable tokens (e.g. `@ Jane Doe`).
+
+Configure mentions with providers using `mentions()`. Each provider handles a trigger `char` and either static items or async search:
+
+```php
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\RichEditor\MentionProviders\MentionProvider;
+
+// Static items for multiple triggers
+RichEditor::make('content')
+    ->mentions([
+        MentionProvider::make('@')
+            ->options([
+                ['id' => 1, 'label' => 'Jane Doe'],
+                ['id' => 2, 'label' => 'John Smith'],
+            ]),
+        MentionProvider::make('#')
+            ->options(['Laravel', 'Filament', 'Livewire']),
+    ])
+```
+
+For large datasets, provide async results with `getSearchResultsUsing()`. The callback receives the search term and should return an array of items (strings, or objects with `id` and `label`).
+
+```php
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\RichEditor\MentionProviders\MentionProvider;
+
+RichEditor::make('content')
+    ->mentions([
+        MentionProvider::make('@')
+            ->getSearchResultsUsing(fn (string $search): array => User::query()
+                ->where('name', 'like', "%{$search}%")
+                ->orderBy('name')
+                ->limit(10)
+                ->pluck('name', 'id')
+                ->all())
+            ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name),
+    ])
+```
+
+
+### Adding extra HTML attributes
+
+You may apply extra HTML attributes to the rendered mention element:
+
+```php
+MentionProvider::make('@')
+    ->options([
+        ['id' => 1, 'label' => 'Jane Doe'],
+    ])
+    ->extraAttributes([
+        'type' => 'user',
+        'class' => 'mention-user text-blue-600',
+    ])
+```
+
+### Notes
+
+- You can provide multiple providers, each with a different `char` (default `@`).
+
 ## Registering rich content attributes
 
 There are elements of the rich editor configuration that apply to both the editor and the renderer. For example, if you are using [private images](#using-private-images-in-the-editor), [custom blocks](#using-custom-blocks), [merge tags](#using-merge-tags), or [plugins](#extending-the-rich-editor), you need to ensure that the same configuration is used in both places. To do this, Filament provides you with a way to register rich content attributes that can be used in both the editor and the renderer.

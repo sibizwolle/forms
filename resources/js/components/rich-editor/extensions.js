@@ -42,6 +42,7 @@ import getMentionSuggestion from './mention-suggestion.js'
 export default async ({
     acceptedFileTypes,
     acceptedFileTypesValidationMessage,
+    canAttachFiles,
     customExtensionUrls,
     deleteCustomBlockButtonIconHtml,
     editCustomBlockButtonIconHtml,
@@ -51,10 +52,10 @@ export default async ({
     maxFileSize,
     maxFileSizeValidationMessage,
     mergeTags,
+    noMergeTagSearchResultsMessage,
     mentions,
     getMentionSearchResultsUsing,
     getMentionLabelUsing,
-    noMergeTagSearchResultsMessage,
     placeholder,
     statePath,
     textColors,
@@ -95,16 +96,21 @@ export default async ({
             openOnClick: false,
         }),
         ListItem,
-        LocalFiles.configure({
-            acceptedTypes: acceptedFileTypes,
-            acceptedTypesValidationMessage: acceptedFileTypesValidationMessage,
-            get$WireUsing: () => $wire,
-            key,
-            maxSize: maxFileSize,
-            maxSizeValidationMessage: maxFileSizeValidationMessage,
-            statePath,
-            uploadingMessage: uploadingFileMessage,
-        }),
+        ...(canAttachFiles
+            ? [
+                  LocalFiles.configure({
+                      acceptedTypes: acceptedFileTypes,
+                      acceptedTypesValidationMessage:
+                          acceptedFileTypesValidationMessage,
+                      get$WireUsing: () => $wire,
+                      key,
+                      maxSize: maxFileSize,
+                      maxSizeValidationMessage: maxFileSizeValidationMessage,
+                      statePath,
+                      uploadingMessage: uploadingFileMessage,
+                  }),
+              ]
+            : []),
         ...(Object.keys(mergeTags).length
             ? [
                   MergeTag.configure({
