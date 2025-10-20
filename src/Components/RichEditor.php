@@ -811,7 +811,7 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
 
     public function saveUploadedFileAttachment(TemporaryUploadedFile $file): mixed
     {
-        if (! $this->hasToolbarButton('attachFiles')) {
+        if (! $this->hasFileAttachments()) {
             return null;
         }
 
@@ -1170,5 +1170,10 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
     public function hasCustomTextColors(): bool
     {
         return (bool) ($this->evaluate($this->hasCustomTextColors) ?? $this->getContentAttribute()?->hasCustomTextColors() ?? false);
+    }
+
+    public function hasFileAttachmentsDefault(): bool
+    {
+        return $this->hasToolbarButton('attachFiles');
     }
 }
