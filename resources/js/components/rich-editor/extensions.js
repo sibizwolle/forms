@@ -121,7 +121,7 @@ export default async ({
                       }),
                       mergeTags,
                   }),
-            ]
+              ]
             : []),
         ...((mentions.length || typeof getMentionSearchResultsUsing === 'function')
             ? [
@@ -129,14 +129,14 @@ export default async ({
                     HTMLAttributes: { class: 'fi-fo-rich-editor-mention' },
                     suggestions: mentions,
                     getMentionSearchResultsUsing,
-                    getMentionLabelUsing
-                })
+                    getMentionLabelUsing,
+                }),
             ]
             : []),
         OrderedList,
         Paragraph,
         Placeholder.configure({
-            placeholder
+            placeholder,
         }),
         TextColor.configure({
             textColors,

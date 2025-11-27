@@ -6,6 +6,7 @@ use Closure;
 
 class MentionProvider
 {
+
     /**
      * @param  array<mixed>|null  $options
      * @param  array<string, mixed>|Closure|null  $extraAttributes
@@ -14,9 +15,10 @@ class MentionProvider
         public string $char,
         protected ?Closure $getSearchResultsUsing = null,
         protected ?array $options = null,
-        protected array | Closure | null $extraAttributes = null,
+        protected array|Closure|null $extraAttributes = null,
         protected ?Closure $getOptionLabelUsing = null,
-    ) {}
+    ) {
+    }
 
     public static function make(string $char): self
     {
@@ -44,6 +46,7 @@ class MentionProvider
     {
         $this->getOptionLabelUsing = $callback;
 
+
         return $this;
     }
 
@@ -52,7 +55,7 @@ class MentionProvider
      *
      * @param  array<string, mixed>|Closure():array<string, mixed>  $attributes
      */
-    public function extraAttributes(array | Closure $attributes): static
+    public function extraAttributes(array|Closure $attributes): static
     {
         $this->extraAttributes = $attributes;
 
@@ -99,7 +102,6 @@ class MentionProvider
                 $itemId = $item['id'] ?? null;
                 if ($itemId == $id) {
                     $label = $item['label'] ?? ($item['name'] ?? null);
-
                     return $label !== null ? strval($label) : null;
                 }
             } elseif (is_string($item) && $item === $id) {
